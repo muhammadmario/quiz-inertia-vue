@@ -16,6 +16,29 @@ const selectedAnswer = ref(0)
 const showDetailQuestion = ref(false)
 const selectedQuestion = ref(null)
 const selectedShowAnswer = ref([])
+const answers = ref([]);
+
+const selectedEditAnswer = ref(null)
+function handleEditAnswer(id) {
+    selectedEditAnswer.value = id
+
+    console.log(selectedShowAnswer)
+
+    selectedShowAnswer.value.forEach(answer => {
+        if (answer.id === id) {
+            answer.correct_answer = 1
+        } else {
+            answer.correct_answer = 0
+        }
+    })
+}
+
+function updateAnswer() {
+    router.put('/answer',
+        selectedShowAnswer.value
+    )
+    console.log(selectedShowAnswer.value)
+}
 
 onMounted(() => {
     console.log(`render.`)
@@ -126,12 +149,12 @@ function viewQuestion(id) {
                         <h3>Detail Question</h3>
                     </template>
                     <template #body>
-                        <p><strong>{{ selectedQuestion.question }}</strong></p>
+                        <p>Question : <strong>{{ selectedQuestion.question }}</strong></p>
                         <table class="table">
                             <thead>
                                 <tr>
                                     <th scope="col">No</th>
-                                    <th scope="col">Question</th>
+                                    <th scope="col">Answer</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -145,7 +168,7 @@ function viewQuestion(id) {
                                     <td>
                                         <div class="form-check d-flex justify-content-center mt-1">
                                             <input :checked="answer.correct_answer === 1" :value="answer.id"
-                                                @change="handleRadioToggle(answer.id)" class="form-check-input" type="radio"
+                                                @change="handleEditAnswer(answer.id)" class="form-check-input" type="radio"
                                                 name="flexRadioDefault" id="flexRadioDefault1">
                                         </div>
                                     </td>
@@ -158,8 +181,7 @@ function viewQuestion(id) {
                             <div class="d-flex gap-2">
                                 <button type="button" class="btn btn-secondary"
                                     @click="showDetailQuestion = false">Close</button>
-                                <button v-if="newAnswers.length > 3" type="button" class="btn btn-success"
-                                    @click="submitQuestion">Submit</button>
+                                <button type="button" class="btn btn-warning" @click="updateAnswer">Edit</button>
                             </div>
                         </div>
                     </template>
@@ -181,9 +203,11 @@ function viewQuestion(id) {
                         <td>{{ question.question }}</td>
                         <td>Otto</td>
                         <td>
-                            <button @click="viewQuestion(index)" class="btn btn-primary">View</button>
-                            <button class="btn btn-warning">Edit</button>
-                            <button class="btn btn-danger">Delete</button>
+                            <template class="d-flex gap-2">
+                                <button @click="viewQuestion(index)" class="btn btn-primary">View</button>
+                                <button class="btn btn-warning">Edit</button>
+                                <button class="btn btn-danger">Delete</button>
+                            </template>
                         </td>
                     </tr>
                 </tbody>
